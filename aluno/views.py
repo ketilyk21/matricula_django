@@ -1,64 +1,85 @@
-from django.views.generic import TemplateView,UpdateView,CreateView,DeleteView,ListView
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
 from django.shortcuts import render,get_object_or_404,redirect
 from .models import Aluno,Curso,Cidade
 from .forms import AlunoForm,AlunoFilterForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+def aluno_editar(request,id):
+    aluno = get_object_or_404(Aluno,id=id)
+   
+    if request.method == 'POST':
+        form = AlunoForm(request.POST,instance=aluno)
+
+        if form.is_valid():
+            form.save()
+            return redirect('aluno_listar')
+    else:
+        form = AlunoForm(instance=aluno)
+
+    return render(request,'aluno/form.html',{'form':form})
 
 
-class AlunoCriar(CreateView):
-    template_name = 'aluno/form.html'
-    form_class = AlunoForm
-    success_url = reverse_lazy('aluno_listar')
+def aluno_remover(request, id):
+    aluno = get_object_or_404(Aluno, id=id)
+    aluno.delete()
+    return redirect('aluno_listar') # procure um url com o nome 'lista_aluno'
 
-class AlunoEditar(UpdateView):
-    model = Aluno
-    form_class = AlunoForm
-    template_name = 'aluno/form.html'
-    pk_url_kwarg = 'id' # Nome da variável na URL
-    
-    def get_success_url(self):
-        return reverse_lazy('aluno_listar')
 
-class AlunoRemover(DeleteView):
-    model = Aluno
-    success_url = reverse_lazy('aluno_listar')
-    pk_url_kwarg = 'id'
+def aluno_criar(request):
+    if request.method == 'POST':
+        form = AlunoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = AlunoForm()
+    else:
+        form = AlunoForm()
 
-    def get(self, *args, **kwargs):
-        return self.delete(*args, **kwargs)
-    
-class AlunoListar(ListView):
-    model = Aluno
-    template_name = 'aluno/alunos.html'
-    context_object_name = 'alunos'  # Nome da variável a ser usada no template
-    paginate_by = 2
+    return render(request, "aluno/form.html", {'form': form})
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Aluno, Curso, Cidade
+from .forms import AlunoForm, AlunoFilterForm
+from django.core.paginator import Paginator
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = AlunoFilterForm(self.request.GET or None)
-        return context
+def aluno_listar(request):
+    alunos = Aluno.objects.all()
+    form_filtro = AlunoFilterForm(request.GET or None)
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        self.form = AlunoFilterForm(self.request.GET or None)
-        if self.form.is_valid():
-            if self.form.cleaned_data.get('nome'):
-                queryset = queryset.filter(nome_aluno__icontains=self.form.cleaned_data['nome'])
-            if self.form.cleaned_data.get('cidade'):
-                queryset = queryset.filter(cidade=self.form.cleaned_data['cidade'])
-            if self.form.cleaned_data.get('curso'):
-                queryset = queryset.filter(curso=self.form.cleaned_data['curso'])
-        return queryset
+    if form_filtro.is_valid():
+        # Pega os valores dos filtros   
+        nome = form_filtro.cleaned_data.get('nome')
+        cidade = form_filtro.cleaned_data.get('cidade')
+        curso = form_filtro.cleaned_data.get('curso')
+        # Aplica os filtros no queryset        
+        if nome:
+            alunos = alunos.filter(nome_aluno__icontains=nome)
+        if cidade:
+            alunos = alunos.filter(cidade=cidade)
+        if curso:
+            alunos = alunos.filter(curso=curso)
 
-class IndexView(TemplateView):
-    template_name = "aluno/index.html"
+    # Configura a paginação usando get_page()
+    paginator = Paginator(alunos, 10)  # Mostra 10 alunos por página
+    page = request.GET.get('page')
+    page_obj = paginator.get_page(page)  # Evita exceções ao lidar com páginas inválidas
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['total_alunos'] = Aluno.objects.count()
-        context['total_cidades'] = Cidade.objects.count()
-        context['total_cursos'] = Curso.objects.count()
-        return context
+    context = {
+        'page_obj': page_obj,  # Passa 'page_obj' para o template
+        'form_filtro': form_filtro
+    }
 
+    return render(request, "aluno/alunos.html", context)
+
+
+
+
+def index(request):
+    total_alunos = Aluno.objects.count()
+    total_cidades = Cidade.objects.count()
+    total_curso = Curso.objects.count()
+    context = {
+        'total_alunos' : total_alunos,
+        'total_cidades' : total_cidades,
+        'total_cursos' : total_curso
+    }
+    return render(request, "aluno/index.html",context)
 
