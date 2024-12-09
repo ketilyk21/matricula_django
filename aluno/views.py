@@ -1,7 +1,10 @@
 from django.shortcuts import render,get_object_or_404,redirect
 from .models import Aluno,Curso,Cidade
 from .forms import AlunoForm,AlunoFilterForm
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Aluno, Curso, Cidade
+from .forms import AlunoForm, AlunoFilterForm
+from django.core.paginator import Paginator
 
 def aluno_editar(request,id):
     aluno = get_object_or_404(Aluno,id=id)
@@ -35,10 +38,7 @@ def aluno_criar(request):
 
     return render(request, "aluno/form.html", {'form': form})
 # views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Aluno, Curso, Cidade
-from .forms import AlunoForm, AlunoFilterForm
-from django.core.paginator import Paginator
+
 
 def aluno_listar(request):
     alunos = Aluno.objects.all()
@@ -74,11 +74,9 @@ def aluno_listar(request):
 
 def index(request):
     total_alunos = Aluno.objects.count()
-    total_cidades = Cidade.objects.count()
     total_curso = Curso.objects.count()
     context = {
         'total_alunos' : total_alunos,
-        'total_cidades' : total_cidades,
         'total_cursos' : total_curso
     }
     return render(request, "aluno/index.html",context)
