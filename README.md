@@ -53,8 +53,8 @@ pip install -r requirements.txt
 ```
 6. Execute as migrações
 ```sh
-python manage.py makemigrations
 python manage.py migrate
+python manage.py load_all_data
 ```
 7. Inicie o servidor
 ```sh
