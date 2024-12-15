@@ -21,3 +21,12 @@ class Aluno(models.Model):
     cidade = models.ForeignKey(Cidade,on_delete=models.CASCADE)
     curso = models.ForeignKey(Curso,on_delete=models.CASCADE)
 
+class Matricula(models.Model):
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
+    data_matricula = models.DateField(auto_now_add=True)
+    data_conclusao = models.DateField(null=True, blank=True)
+    nota_final = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.aluno.nome_aluno} - {self.curso.nome}"
