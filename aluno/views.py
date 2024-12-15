@@ -81,3 +81,5 @@ def index(request):
     }
     return render(request, "aluno/index.html",context)
 
+
+

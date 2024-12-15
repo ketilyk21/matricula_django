@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from aluno.models import Aluno, Cidade, Curso  # Substitua 'aluno' pelo nome do seu app
+from aluno.models import Aluno, Cidade  # Substitua 'aluno' pelo nome do seu app
 from faker import Faker
 import random
 
@@ -9,12 +9,11 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         fake = Faker()
 
-        # Obtém todas as cidades e cursos previamente carregados
+        # Obtém todas as cidades previamente carregadas
         cidades = list(Cidade.objects.all())
-        cursos = list(Curso.objects.all())
 
-        if not cidades or not cursos:
-            self.stdout.write(self.style.ERROR("Certifique-se de que cidades e cursos estão carregados antes de executar este comando."))
+        if not cidades:
+            self.stdout.write(self.style.ERROR("Certifique-se de que cidades estão carregadas antes de executar este comando."))
             return
 
         # Cria 20 alunos fictícios
@@ -23,15 +22,13 @@ class Command(BaseCommand):
             endereco = fake.address()
             email = fake.email()
             cidade = random.choice(cidades)
-            curso = random.choice(cursos)
 
             # Cria o aluno no banco de dados
             Aluno.objects.create(
                 nome_aluno=nome_aluno,
                 endereco=endereco,
                 email=email,
-                cidade=cidade,
-                curso=curso
+                cidade=cidade
             )
 
         self.stdout.write(self.style.SUCCESS("20 alunos fictícios foram criados com sucesso!"))

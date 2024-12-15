@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block center %}
-    <h2> Formulário de Matricula.</h2>
+    <h2> Formulário de Aluno</h2>
        
     <form method="post">
         {% csrf_token %}
@@ -25,13 +25,7 @@
             <label for="nome" class="form-label">Cidade</label>
             {{ form.cidade }}
         </div>
-
-        <div class="mb-3">
-            <label for="nome" class="form-label">Curso</label>
-            {{ form.curso }}
-        </div>
-
-
+  
         <button type="submit" class="btn btn-primary">Enviar</button>
     </form>    
 {% endblock %}

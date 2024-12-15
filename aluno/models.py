@@ -19,12 +19,11 @@ class Aluno(models.Model):
     endereco = models.CharField(max_length=250)
     email = models.EmailField()
     cidade = models.ForeignKey(Cidade,on_delete=models.CASCADE)
-    curso = models.ForeignKey(Curso,on_delete=models.CASCADE)
 
 class Matricula(models.Model):
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    data_matricula = models.DateField(auto_now_add=True)
+    data_matricula = models.DateField()
     data_conclusao = models.DateField(null=True, blank=True)
     nota_final = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
