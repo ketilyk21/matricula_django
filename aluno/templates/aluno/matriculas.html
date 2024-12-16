@@ -1,0 +1,49 @@
+<!-- matricula/matriculas.html -->
+{% extends 'base.html' %}
+
+
+{% block center %}
+  <h2>Lista de Matriculas</h2>
+
+  <!-- Botão para Novo Cadastro -->
+  <div class="d-flex justify-content-end">
+    <a href="{% url 'matricula_criar' %}" class="btn btn-success mb-3">Novo Cadastro</a>
+  </div>
+
+  <!-- Tabela de matriculas -->
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Aluno(a)</th>
+        <th>Curso</th>
+        <th>Data da matrícula</th>
+        <th>Data da conclusão</th>
+        <th>Nota final</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for matricula in page_obj %}
+      <tr>
+        <td>{{ matricula.aluno.nome_aluno }}</td>
+        <td>{{ matricula.curso.nome }}</td>
+        <td>{{ matricula.data_matricula }}</td>
+        <td>{{ matricula.data_conclusao }}</td>
+        <td>{{ matricula.nota_final }}</td>
+        <td>
+          <a href="{% url 'matricula_editar' matricula.id %}" class="btn btn-primary btn-sm">Editar</a>
+          <a href="{% url 'matricula_remover' matricula.id %}" class="btn btn-danger btn-sm">Remover</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5">Nenhuma matricula encontrada.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  <!-- Controles de Paginação -->
+  {% include 'pagination.html' %}
+
+{% endblock %}

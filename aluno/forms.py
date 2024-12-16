@@ -1,6 +1,8 @@
-from django.forms import ModelForm
 from django import forms
-from .models import Aluno,Curso,Cidade,Matricula
+from django.forms import ModelForm
+
+from .models import Aluno, Cidade, Curso, Matricula
+
 
 class AlunoForm(ModelForm):
 
@@ -31,6 +33,8 @@ class MatriculaForm(forms.ModelForm):
         fields = ['aluno', 'curso', 'data_matricula', 'data_conclusao', 'nota_final']
         widgets = {
             'aluno': forms.Select(attrs={'class': 'form-control'}),
+            'curso': forms.Select(attrs={'class': 'form-control'}),
             'data_matricula': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'data_conclusao': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'nota_final': forms.NumberInput(attrs={'class': 'form-control', 'step': 0.01}),
         }

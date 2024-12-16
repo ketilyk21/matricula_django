@@ -1,10 +1,9 @@
-from django.shortcuts import render,get_object_or_404,redirect
-from .models import Aluno,Curso,Cidade
-from .forms import AlunoForm,AlunoFilterForm
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Aluno, Curso, Cidade
-from .forms import AlunoForm, AlunoFilterForm
 from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import AlunoFilterForm, AlunoForm, MatriculaForm
+from .models import Aluno, Cidade, Curso, Matricula
+
 
 def aluno_editar(request,id):
     aluno = get_object_or_404(Aluno,id=id)
@@ -75,11 +74,54 @@ def aluno_listar(request):
 def index(request):
     total_alunos = Aluno.objects.count()
     total_curso = Curso.objects.count()
+    total_matriculas = Matricula.objects.count()
     context = {
         'total_alunos' : total_alunos,
-        'total_cursos' : total_curso
+        'total_cursos' : total_curso,
+        'total_matriculas': total_matriculas
     }
     return render(request, "aluno/index.html",context)
 
+def matriculas_listar(request):
+    matriculas = Matricula.objects.all()
+    paginator = Paginator(matriculas, 10) 
+    page = request.GET.get('page')
+    page_obj = paginator.get_page(page) 
+
+    context = {
+        'page_obj': page_obj, 
+    }
+    return render(request, 'aluno/matriculas.html', context)
+
+def matricula_editar(request,id):
+    matricula = get_object_or_404(Matricula,id=id)
+   
+    if request.method == 'POST':
+        form = MatriculaForm(request.POST,instance=matricula)
+
+        if form.is_valid():
+            form.save()
+            return redirect('matricula_listar')
+    else:
+        form = MatriculaForm(instance=matricula)
+
+    return render(request,'aluno/form_matricula.html',{'form':form})
 
 
+def matricula_remover(request, id):
+    matricula = get_object_or_404(Matricula, id=id)
+    matricula.delete()
+    return redirect('matricula_listar') 
+
+
+def matricula_criar(request):
+    if request.method == 'POST':
+        form = MatriculaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('matricula_listar')
+            form = MatriculaForm()
+    else:
+        form = MatriculaForm()
+
+    return render(request, "aluno/form_matricula.html", {'form': form})
