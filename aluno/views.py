@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import AlunoFilterForm, AlunoForm, MatriculaForm
+from .forms import AlunoFilterForm, AlunoForm, MatriculaFilterForm, MatriculaForm
 from .models import Aluno, Cidade, Curso, Matricula
 
 
@@ -84,12 +84,26 @@ def index(request):
 
 def matriculas_listar(request):
     matriculas = Matricula.objects.all()
+
+    form_filtro = MatriculaFilterForm(request.GET or None)
+
+    if form_filtro.is_valid():
+        # Pega os valores dos filtros   
+        aluno = form_filtro.cleaned_data.get('aluno')
+        curso = form_filtro.cleaned_data.get('curso')
+        # Aplica os filtros no queryset        
+        if aluno:
+            matriculas = matriculas.filter(aluno=aluno)
+        if curso:
+            matriculas = matriculas.filter(curso=curso)
+
     paginator = Paginator(matriculas, 10) 
     page = request.GET.get('page')
     page_obj = paginator.get_page(page) 
 
     context = {
         'page_obj': page_obj, 
+        'form_filtro': form_filtro
     }
     return render(request, 'aluno/matriculas.html', context)
 

@@ -5,6 +5,24 @@
 {% block center %}
   <h2>Lista de Matriculas</h2>
 
+   <!-- Formulário de Filtro -->
+  <form method="get">
+    <div class="mb-3">
+      <label for="nome" class="form-label">aluno</label>
+      {{ form_filtro.aluno }}
+    </div>
+   
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="curso" class="form-label">Curso</label>
+        {{ form_filtro.curso }}
+      </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+    <a href="{% url 'matricula_listar' %}" class="btn btn-secondary">Limpar Filtros</a>
+  </form>
+
   <!-- Botão para Novo Cadastro -->
   <div class="d-flex justify-content-end">
     <a href="{% url 'matricula_criar' %}" class="btn btn-success mb-3">Novo Cadastro</a>

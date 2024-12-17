@@ -38,3 +38,13 @@ class MatriculaForm(forms.ModelForm):
             'data_conclusao': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'nota_final': forms.NumberInput(attrs={'class': 'form-control', 'step': 0.01}),
         }
+    
+class MatriculaFilterForm(forms.Form):
+    aluno = forms.ModelChoiceField(queryset=Aluno.objects.all(), required=False)
+    curso = forms.ModelChoiceField(queryset=Curso.objects.all(), required=False)
+    
+    # adicionar a classe form-control para todos os campos
+    def __init__(self, *args, **kwargs):
+        super(MatriculaFilterForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
